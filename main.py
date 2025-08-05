@@ -144,7 +144,7 @@ async def get_jobs() -> list:
 
 @mcp.tool()
 async def trigger_build(job_name: str, parameters: Optional[dict] = None) -> dict:
-    """执行具体某个 Jenkins 任务的构建
+    """执行某个具体 Jenkins 任务的构建，调用前应先获取所有任务进行校验和帮助构建参数
 
     参数：
         job_name：需要执行的任务名称
