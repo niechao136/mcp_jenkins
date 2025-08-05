@@ -40,14 +40,14 @@ class JenkinsClient:
 
     async def build_job(self, name: str) -> bool:
         async with httpx.AsyncClient(timeout=5) as client:
-            response = await client.get(f"{self.base}/job/{name}/build", auth=self.auth)
+            response = await client.post(f"{self.base}/job/{name}/build", auth=self.auth)
             response.raise_for_status()
             return response.status_code == 200
 
     async def build_with_param(self, name: str, param: dict) -> bool:
         query_string = "?" + urlencode(param) if param else ""
         async with httpx.AsyncClient(timeout=5) as client:
-            response = await client.get(f"{self.base}/job/{name}/buildWithParameters{query_string}", auth=self.auth)
+            response = await client.post(f"{self.base}/job/{name}/buildWithParameters{query_string}", auth=self.auth)
             response.raise_for_status()
             return response.status_code == 200
 
