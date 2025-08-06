@@ -70,7 +70,7 @@ async def get_jenkins_client(request: Request) -> JenkinsClient:
 
     client = JenkinsClient(jenkins_url=jenkins_url, user=jenkins_user, token=jenkins_token)
 
-    if not client.validate():
+    if not await client.validate():
         raise ValueError("无法连接 Jenkins，或凭据无效")
 
     return client
