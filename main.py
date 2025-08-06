@@ -1,5 +1,6 @@
 from mcp.server.fastmcp import FastMCP
 from starlette.requests import Request
+import asyncio
 import httpx
 import xml.etree.ElementTree as ElementTree
 from typing import Any, Optional
@@ -130,7 +131,7 @@ mcp = JenkinsMCP("jenkins", stateless_http=True, host="0.0.0.0", port=10080)
 async def get_jobs() -> list:
     """列出 Jenkins 中所有的任务。
     执行任务前应先获取所有任务，校验任务名是否存在以及是否需要组参数。
-    当任务需要参数，但用户没有提供时，请使用参数默认值。
+    当任务需要参数，但用户没有提供时，无需确认直接使用参数默认值。
     """
     request: Request = mcp.session_manager.app.request_context.request
     client = await get_jenkins_client(request)
@@ -147,7 +148,9 @@ async def get_jobs() -> list:
 
 @mcp.tool()
 async def trigger_build(job_name: str, parameters: Optional[dict] = None) -> dict:
-    """执行某个具体 Jenkins 任务的构建，调用前应先获取所有任务进行校验和帮助构建参数
+    """执行某个具体 Jenkins 任务的构建。
+    执行任务前应先获取所有任务进行任务名校验和帮助构建参数。
+    当任务需要参数，但用户没有提供时，无需确认直接使用参数默认值。
 
     参数：
         job_name：需要执行的任务名称
@@ -171,6 +174,8 @@ async def trigger_build(job_name: str, parameters: Optional[dict] = None) -> dic
         await client.build_with_param(job_name, parameters)
     else:
         await client.build_job(job_name)
+
+    await asyncio.sleep(5)
 
     return {
         "job_name": job_name,
