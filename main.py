@@ -128,7 +128,10 @@ mcp = JenkinsMCP("jenkins", stateless_http=True, host="0.0.0.0", port=10080)
 
 @mcp.tool()
 async def get_jobs() -> list:
-    """列出 Jenkins 中所有的任务"""
+    """列出 Jenkins 中所有的任务。
+    执行任务前应先获取所有任务，校验任务名是否存在以及是否需要组参数。
+    当任务需要参数，但用户没有提供时，请使用参数默认值。
+    """
     request: Request = mcp.session_manager.app.request_context.request
     client = await get_jenkins_client(request)
     jobs = await client.get_jobs()
